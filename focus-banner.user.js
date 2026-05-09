@@ -111,11 +111,35 @@
     `;
     banner.querySelector('.text').textContent = message;
 
+    let collapseTimer = null;
+    const scheduleCollapse = () => {
+      if (collapseTimer) clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(() => banner.classList.add('collapsed'), 5000);
+    };
+
+    // Click on the collapsed pill re-expands
+    banner.addEventListener('click', (e) => {
+      if (e.target.classList.contains('close')) return; // close handled separately
+      if (banner.classList.contains('collapsed')) {
+        banner.classList.remove('collapsed');
+        scheduleCollapse();
+      }
+    });
+
+    // Close button collapses immediately
+    banner.querySelector('.close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (collapseTimer) clearTimeout(collapseTimer);
+      banner.classList.add('collapsed');
+    });
+
     if (document.body) {
       document.body.appendChild(banner);
     } else {
       document.addEventListener('DOMContentLoaded', () => document.body.appendChild(banner));
     }
+
+    scheduleCollapse();
     return banner;
   }
 
