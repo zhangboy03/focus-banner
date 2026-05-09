@@ -268,7 +268,33 @@
     });
   }
 
+  function showTodayCounts() {
+    let counter;
+    try {
+      counter = JSON.parse(GM_getValue('counter', '{}'));
+    } catch (e) {
+      counter = {};
+    }
+    const today = todayKey();
+    const data = counter[today] || {};
+
+    const labelByKey = {};
+    TRACKED_SITES.forEach(s => { labelByKey[s.key] = s.label; });
+
+    const entries = Object.entries(data);
+    const text = entries.length
+      ? entries.map(([k, n]) => `${labelByKey[k] || k}: ${n}`).join('\n')
+      : '今天还没有访问记录';
+
+    GM_notification({
+      title: `今日分心计数 (${today})`,
+      text,
+      timeout: 5000
+    });
+  }
+
   GM_registerMenuCommand('🔥 切换 Work Mode', toggleWorkMode);
+  GM_registerMenuCommand('📊 查看今日计数', showTodayCounts);
 
   const site = getCurrentSite();
   console.log('[focus-banner] loaded on', location.hostname,
