@@ -226,11 +226,19 @@
     const banner = document.createElement('div');
     banner.id = 'focus-banner';
     banner.dataset.count = count;
-    banner.innerHTML = `
-      <span class="text"></span>
-      <button class="close" aria-label="collapse">×</button>
-    `;
-    banner.querySelector('.text').textContent = message;
+
+    // Build DOM via createElement instead of innerHTML — YouTube / GitHub /
+    // Google etc. enforce Trusted Types CSP that blocks innerHTML assignment.
+    const textSpan = document.createElement('span');
+    textSpan.className = 'text';
+    textSpan.textContent = message;
+    banner.appendChild(textSpan);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close';
+    closeBtn.setAttribute('aria-label', 'collapse');
+    closeBtn.textContent = '×';
+    banner.appendChild(closeBtn);
 
     let collapseTimer = null;
     const scheduleCollapse = () => {
@@ -240,7 +248,7 @@
 
     // Click on the collapsed pill re-expands
     banner.addEventListener('click', (e) => {
-      if (e.target.classList.contains('close')) return; // × handled separately
+      if (e.target === closeBtn) return; // × handled separately
       if (banner.classList.contains('collapsed')) {
         banner.classList.remove('collapsed');
         scheduleCollapse();
@@ -248,7 +256,7 @@
     });
 
     // × button collapses immediately
-    banner.querySelector('.close').addEventListener('click', (e) => {
+    closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (collapseTimer) clearTimeout(collapseTimer);
       banner.classList.add('collapsed');
