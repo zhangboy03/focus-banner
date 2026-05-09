@@ -25,7 +25,13 @@
       padding: 12px 24px;
       font: 500 15px/1.4 -apple-system, system-ui, "Helvetica Neue", sans-serif;
       box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-      transition: all .35s cubic-bezier(.4,0,.2,1);
+      transition: top .35s cubic-bezier(.4,0,.2,1),
+                  right .35s cubic-bezier(.4,0,.2,1),
+                  width .35s cubic-bezier(.4,0,.2,1),
+                  height .35s cubic-bezier(.4,0,.2,1),
+                  border-radius .35s cubic-bezier(.4,0,.2,1),
+                  background .35s cubic-bezier(.4,0,.2,1),
+                  padding .35s cubic-bezier(.4,0,.2,1);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -222,7 +228,7 @@
     banner.dataset.count = count;
     banner.innerHTML = `
       <span class="text"></span>
-      <button class="close" aria-label="dismiss">×</button>
+      <button class="close" aria-label="collapse">×</button>
     `;
     banner.querySelector('.text').textContent = message;
 
@@ -234,25 +240,22 @@
 
     // Click on the collapsed pill re-expands
     banner.addEventListener('click', (e) => {
-      if (e.target.classList.contains('close')) return; // close handled separately
+      if (e.target.classList.contains('close')) return; // × handled separately
       if (banner.classList.contains('collapsed')) {
         banner.classList.remove('collapsed');
         scheduleCollapse();
       }
     });
 
-    // Close button collapses immediately
+    // × button collapses immediately
     banner.querySelector('.close').addEventListener('click', (e) => {
       e.stopPropagation();
       if (collapseTimer) clearTimeout(collapseTimer);
       banner.classList.add('collapsed');
     });
 
-    if (document.body) {
-      document.body.appendChild(banner);
-    } else {
-      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(banner));
-    }
+    // @run-at document_idle guarantees document.body is ready
+    document.body.appendChild(banner);
 
     scheduleCollapse();
     return banner;
@@ -297,11 +300,10 @@
   GM_registerMenuCommand('📊 查看今日计数', showTodayCounts);
 
   const site = getCurrentSite();
-  console.log('[focus-banner] loaded on', location.hostname,
-              '| work-mode:', GM_getValue('work-mode', false),
-              '| site:', site ? site.label : '(not tracked)');
-
   if (!site) return;
+
+  console.log('[focus-banner]', site.label, '| work-mode:', GM_getValue('work-mode', false));
+
   if (!GM_getValue('work-mode', false)) return;
   if (sessionStorage.getItem('focus-banner-shown') === 'true') return;
 
