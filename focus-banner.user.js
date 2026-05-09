@@ -1,8 +1,14 @@
 // ==UserScript==
 // @name         Focus Banner
-// @namespace    https://link.zhangboy.xyz/
+// @namespace    https://github.com/zhangboy03/focus-banner
 // @version      0.1.0
-// @description  Sharp distraction-awareness banner for B 站 / 小红书 / YouTube / X
+// @description  逛 B 站/小红书/YouTube/X 时弹一句犀利文案打断分心 — 自由职业者的反摸鱼提醒
+// @author       zhangboy03
+// @homepageURL  https://github.com/zhangboy03/focus-banner
+// @supportURL   https://github.com/zhangboy03/focus-banner/issues
+// @updateURL    https://raw.githubusercontent.com/zhangboy03/focus-banner/main/focus-banner.user.js
+// @downloadURL  https://raw.githubusercontent.com/zhangboy03/focus-banner/main/focus-banner.user.js
+// @license      MIT
 // @match        *://*/*
 // @grant        GM_setValue
 // @grant        GM_getValue
