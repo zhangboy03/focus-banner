@@ -47,6 +47,23 @@
 
 全站匹配，目的是让 Tampermonkey 菜单命令「切换 Work Mode」在任意页面都可见。脚本主体逻辑（banner、计数）只在 hostname 命中目标站点时执行。非目标站点上脚本的工作只有「注册菜单命令」，开销可忽略。
 
+### Userscript 头部
+
+```js
+// ==UserScript==
+// @name         Focus Banner
+// @namespace    https://link.zhangboy.xyz/
+// @version      0.1.0
+// @description  Sharp distraction-awareness banner for B 站 / 小红书 / YouTube / X
+// @match        *://*/*
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_notification
+// @run-at       document_idle
+// ==/UserScript==
+```
+
 ### 目标站点表
 
 ```js
@@ -59,7 +76,7 @@ const TRACKED_SITES = {
 };
 ```
 
-匹配规则：`location.hostname.endsWith(domain) || location.hostname === domain` 或 `endsWith('.' + domain)`，避免 `notbilibili.com` 这类误命中。
+匹配规则：`location.hostname === domain || location.hostname.endsWith('.' + domain)`。注意：不能直接用 `hostname.endsWith(domain)`，否则 `notbilibili.com` 会被误判命中。
 
 ## 组件
 
