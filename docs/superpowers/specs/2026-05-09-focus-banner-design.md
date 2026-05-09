@@ -60,6 +60,7 @@
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_notification
+// @grant        GM_addStyle
 // @run-at       document_idle
 // ==/UserScript==
 ```
@@ -137,6 +138,10 @@ GM_registerMenuCommand('📊 查看今日计数', () => {
 ```
 
 每日首次访问会自动建立当日键。旧日期保留作历史，未来可视化用。无主动清理（30 天数据 ~几 KB，不必）。
+
+**`todayKey()` 定义**：`new Date().toLocaleDateString('en-CA')` —— 输出本地时区的 `YYYY-MM-DD`（en-CA locale 强制 ISO 格式）。这意味着「今天」按用户本地工作日划分，凌晨过 0:00 计数自然重置。
+
+**已知限制（接受）**：同时打开多个 tab 到同一站点存在 GM_setValue 读改写竞态——理论上 4 tab 同时打开，计数可能只 +1 而非 +4。MVP 阶段接受此精度损失（计数本就是粗略指标，且人类几乎不会瞬时打开多个 tab）。
 
 #### 会话标记（sessionStorage）
 
