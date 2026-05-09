@@ -15,6 +15,24 @@
 (function () {
   'use strict';
 
+  const TRACKED_SITES = [
+    { domain: 'bilibili.com',    key: 'bilibili',    label: 'B 站' },
+    { domain: 'xiaohongshu.com', key: 'xiaohongshu', label: '小红书' },
+    { domain: 'youtube.com',     key: 'youtube',     label: 'YouTube' },
+    { domain: 'x.com',           key: 'x',           label: 'X' },
+    { domain: 'twitter.com',     key: 'x',           label: 'X' }, // legacy redirect
+  ];
+
+  function getCurrentSite() {
+    const host = location.hostname;
+    for (const site of TRACKED_SITES) {
+      if (host === site.domain || host.endsWith('.' + site.domain)) {
+        return site;
+      }
+    }
+    return null;
+  }
+
   function toggleWorkMode() {
     const next = !GM_getValue('work-mode', false);
     GM_setValue('work-mode', next);
@@ -27,6 +45,8 @@
 
   GM_registerMenuCommand('🔥 切换 Work Mode', toggleWorkMode);
 
+  const site = getCurrentSite();
   console.log('[focus-banner] loaded on', location.hostname,
-              '| work-mode:', GM_getValue('work-mode', false));
+              '| work-mode:', GM_getValue('work-mode', false),
+              '| site:', site ? site.label : '(not tracked)');
 })();
