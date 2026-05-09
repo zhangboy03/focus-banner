@@ -162,8 +162,10 @@
 
   if (!site) return;
   if (!GM_getValue('work-mode', false)) return;
+  if (sessionStorage.getItem('focus-banner-shown') === 'true') return;
 
   const n = incrementCounter(site.key);
   const placeholder = `[TEST] 第 ${n} 次。这条消息是占位用的。`;
   injectBanner(placeholder, n);
+  sessionStorage.setItem('focus-banner-shown', 'true');
 })();
