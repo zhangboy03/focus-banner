@@ -33,6 +33,24 @@
     return null;
   }
 
+  function todayKey() {
+    return new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local timezone
+  }
+
+  function incrementCounter(siteKey) {
+    let counter;
+    try {
+      counter = JSON.parse(GM_getValue('counter', '{}'));
+    } catch (e) {
+      counter = {};
+    }
+    const today = todayKey();
+    counter[today] = counter[today] || {};
+    counter[today][siteKey] = (counter[today][siteKey] || 0) + 1;
+    GM_setValue('counter', JSON.stringify(counter));
+    return counter[today][siteKey];
+  }
+
   function toggleWorkMode() {
     const next = !GM_getValue('work-mode', false);
     GM_setValue('work-mode', next);
@@ -49,4 +67,10 @@
   console.log('[focus-banner] loaded on', location.hostname,
               '| work-mode:', GM_getValue('work-mode', false),
               '| site:', site ? site.label : '(not tracked)');
+
+  if (!site) return;
+  if (!GM_getValue('work-mode', false)) return;
+
+  const n = incrementCounter(site.key);
+  console.log('[focus-banner] count for', site.key, '=', n);
 })();
