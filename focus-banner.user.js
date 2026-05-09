@@ -15,6 +15,53 @@
 (function () {
   'use strict';
 
+  GM_addStyle(`
+    #focus-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999999;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 12px 24px;
+      font: 500 15px/1.4 -apple-system, system-ui, "Helvetica Neue", sans-serif;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+      transition: all .35s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    #focus-banner .text { flex: 1; }
+    #focus-banner .close {
+      background: transparent;
+      color: #fff;
+      border: 0;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      opacity: 0.7;
+    }
+    #focus-banner .close:hover { opacity: 1; }
+    #focus-banner.collapsed {
+      top: 12px; left: auto; right: 12px;
+      width: 36px; height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      background: #c0392b;
+      cursor: pointer;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(192,57,43,0.4);
+    }
+    #focus-banner.collapsed .text,
+    #focus-banner.collapsed .close { display: none; }
+    #focus-banner.collapsed::before {
+      content: "·" attr(data-count);
+      font-size: 12px;
+      font-weight: 700;
+    }
+  `);
+
   const TRACKED_SITES = [
     { domain: 'bilibili.com',    key: 'bilibili',    label: 'B 站' },
     { domain: 'xiaohongshu.com', key: 'xiaohongshu', label: '小红书' },
@@ -51,6 +98,27 @@
     return counter[today][siteKey];
   }
 
+  function injectBanner(message, count) {
+    const existing = document.getElementById('focus-banner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'focus-banner';
+    banner.dataset.count = count;
+    banner.innerHTML = `
+      <span class="text"></span>
+      <button class="close" aria-label="dismiss">×</button>
+    `;
+    banner.querySelector('.text').textContent = message;
+
+    if (document.body) {
+      document.body.appendChild(banner);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(banner));
+    }
+    return banner;
+  }
+
   function toggleWorkMode() {
     const next = !GM_getValue('work-mode', false);
     GM_setValue('work-mode', next);
@@ -72,5 +140,6 @@
   if (!GM_getValue('work-mode', false)) return;
 
   const n = incrementCounter(site.key);
-  console.log('[focus-banner] count for', site.key, '=', n);
+  const placeholder = `[TEST] 第 ${n} 次。这条消息是占位用的。`;
+  injectBanner(placeholder, n);
 })();
